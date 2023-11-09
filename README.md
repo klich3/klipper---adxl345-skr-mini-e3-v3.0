@@ -60,3 +60,78 @@ spi_software_mosi_pin: PD3
 3) `TEST_RESONANCES AXIS=Y`
 4) ~/klipper/scripts/calibrate_shaper.py /tmp/resonances_x_*.csv -o /tmp/shaper_calibrate_x.png
     ~/klipper/scripts/calibrate_shaper.py /tmp/resonances_y_*.csv -o /tmp/shaper_calibrate_y.png
+
+---
+
+# ARDUINO as second MCU
+
+![arduino nanoe](images/ArduinoNano_ADXL345.jpg)
+
+|pin sensor|pin arduino|arduino nano|
+|---|---|---|
+|CS|10/PB2|D10|
+|SD0|12/PB4|D12|
+|SDA|11/PB3|D11|
+|SCL|13/PB5|D13|
+|GND|GND|GND|
+|VCC|3.3V|3.3v|
+
+# Flashing
+
+***old version of avrdude***:
+
+    1) `sudo nano /etc/apt/sources.list`
+    2) Add `deb http://raspbian.raspberrypi.org/raspbian/ buster main contrib non-free rpi`
+    3) Save and quit (`:wq`)
+    4) `sudo nano /etc/apt/preferences.d/avr-buster`
+    5) Type below and save file
+        ```
+        Package: avr-libc avrdud binutils-avr gcc-avr
+        Pin: release n=buster
+        Pin-Priority: 1001
+        ```
+    6) Save and quit (`:wq`)
+    7) ```
+        sudo apt update
+        sudo apt install avr-libc avrdude binutils-avr gcc-avr
+        cd ~/klipper
+        make menuconfig
+        ```
+    8) Change Micro-controller Architecture to ***Atmega AVR*** and Processor model to atmega<168|328|328p>
+    9) Press `q` and `y`
+    10) ````
+        make clean
+        make
+        avrdude -patmega328p -c arduino  -b 57600 -P /dev/ttyUSB1 -v  -D -Uflash:w:out/klipper.elf.hex:i
+        ```
+        ***Note***: `/dev/ttyUSB1` may be different on your system and per printer primary MCU. Change any reference to match further ahead.
+    11) Once this is completed, nano will be ready to be used as a Second Klipper MCU
+
+
+***new version:***
+    ```
+    sudo sed -i '$ a\deb http://raspbian.raspberrypi.org/raspbian/ buster main contrib non-free rpi' /etc/apt/sources.list
+
+    echo -e "Package: avr-libc avrdude binutils-avr gcc-avr\nPin: release n=buster\nPin-Priority: 1001" | sudo tee /etc/apt/preferences.d/avr-buster > /dev/null
+
+    sudo apt update
+
+    sudo apt install avr-libc avrdude binutils-avr gcc-avr
+
+    avrdude -patmega328p -c arduino  -b 57600 -P /dev/ttyUSB1 -v  -D -Uflash:w:out/klipper.elf.hex:i
+    ```
+
+
+---
+
+# printer.cfg
+
+Be sure to change serial address below as per output of 'ls /dev/serial/by-id/*'
+
+```
+[mcu arduino_nano_adxl]
+serial: dev/serial/by-id/<usb-Arduino... | 1a86_USB2.0-Serial-if00-port0>
+
+[adxl345]
+cs_pin: arduino_nano_adxl:PB2
+```
