@@ -135,3 +135,9 @@ serial: dev/serial/by-id/<usb-Arduino... | 1a86_USB2.0-Serial-if00-port0>
 [adxl345]
 cs_pin: arduino_nano_adxl:PB2
 ```
+
+---
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=klich3/klipper---adxl345-skr-mini-e3-v3.0&type=Date)](https://star-history.com/#klich3/klipper---adxl345-skr-mini-e3-v3.0&Date)
