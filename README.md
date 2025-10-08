@@ -34,7 +34,7 @@ spi_bus: spi1
 
 |PD0 | PD2 | PD3 | PD4 | PD5 |
 |-----|-----|-----|-----|-----|
-| cs  | scl | sda | sd0 |  x |
+| scl | cs | sda | sd0 |  x |
 | NSS | CLK | MOSI| MISO|  x |
 
 ![io-port-wiring](images/io-port.jpg)
